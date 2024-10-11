@@ -1,0 +1,19 @@
+<div
+  class="section-container modal-container"
+  [ngClass]="{
+    dark: isDarkThemeEnabled,
+    light: !isDarkThemeEnabled
+  }"
+>
+  <div class="justify-between">
+    <div>
+      <h2 mat-dialog-title>Image</h2>
+    </div>
+    <div class="close-btn" (click)="closeModal()">
+      <mat-icon class="material-symbols-outlined">close</mat-icon>
+    </div>
+  </div>
+  <mat-dialog-content>
+    <img class="w-100 h-100" [src]="data.preview" />
+  </mat-dialog-content>
+</div>

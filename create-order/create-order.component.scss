@@ -1,0 +1,147 @@
+.sections-border {
+  border: 1px solid black;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.left-form {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+
+.shippingInfo {
+  flex-grow: 1;
+  margin-top: 10px;
+}
+
+.projectInfo {
+  margin-left: 10px;
+}
+
+.example-form mat-slide-toggle {
+  margin: 8px 0;
+}
+
+.preview {
+  max-width: 100px;
+}
+
+.lot-section {
+  margin-top: 15px;
+}
+
+.lot-btn {
+  border: 1px solid grey;
+  border-radius: 10px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.scroll-wrapper,
+drag-scroll {
+  max-width: 500px;
+  width: 500px;
+}
+
+::ng-deep.drag-scroll-content {
+  width: unset !important;
+}
+
+.scroll-wrapper {
+  overflow-x: scroll;
+  scrollbar-width: none;
+}
+
+.lotNum span:first-child {
+  margin-left: 5px;
+}
+
+.scroll-wrapper div {
+  display: flex;
+}
+
+.wafer-info-cell {
+  min-width: 35px !important;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0px;
+}
+
+.email-btn {
+  margin-left: 10px;
+  height: 55px;
+  width: 55px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+
+  &.dark {
+    background: rgba(0, 0, 0, 0.25);
+    border-color: #003f53;
+    color: #5f8895;
+  }
+
+  &.light {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: #abd3e0;
+    color: #494949;
+  }
+}
+
+.emailsDiv {
+  border: 1px solid white;
+  padding: 5px;
+  margin: 0px 10px 20px 0px;
+  border-radius: 20px;
+}
+
+#emailsContainer {
+  flex-wrap: wrap;
+}
+
+.clearIcon {
+  font-size: 20px;
+  position: relative;
+  top: 2px;
+}
+
+.searchInput::placeholder {
+  color: white !important;
+}
+
+// .custom-mat-select{
+//     max-height: unset;
+//     overflow: auto;
+// }
+.previewImgIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.searchBlock {
+  max-height: 275px;
+  overflow: auto;
+}
+.save-order-loader {
+  width: 50px !important;
+  height: 50px !important;
+}
+.loader-section {
+  margin-top: 35vh;
+}
+@media (max-width: 1675px) {
+  .waferOptions {
+    margin: 15px 0px;
+  }
+}

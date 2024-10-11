@@ -1,0 +1,13 @@
+mat-dialog-content {
+  overflow: unset !important;
+  height: 65vh !important;
+  max-width: 85vw;
+}
+
+.close-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 24px;
+  cursor: pointer;
+}

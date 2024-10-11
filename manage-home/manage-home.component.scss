@@ -1,0 +1,96 @@
+.preview {
+  max-width: 200px;
+}
+
+.headingInput {
+  border-radius: 8px;
+  border: 1px solid #8080804f;
+  width: 100%;
+  padding: 15px;
+
+  &.dark {
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
+  }
+}
+
+.fileInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 3px;
+  border: 1px solid #8080804f;
+}
+
+.updateBtn {
+  background: #78be2d;
+  color: white;
+}
+
+// table {
+
+//   td,
+//   th {
+//     vertical-align: middle;
+//     font-size: 14px;
+//   }
+// }
+
+.table-row {
+  &.dark:hover {
+    background: rgb(2, 39, 51);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 164, 217, 0.3) 14%,
+      rgba(0, 169, 224, 0.3) 87%,
+      transparent 100%
+    );
+  }
+  &.light:hover {
+    background: rgb(2, 39, 51);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 164, 217, 0.3) 33%,
+      rgba(0, 169, 224, 0.3) 67%,
+      transparent 100%
+    );
+  }
+}
+
+.table-sec {
+  border-radius: 4px;
+  box-shadow: 0 0 0.5rem rgb(0 0 0 / 9%);
+  position: relative;
+  height: auto;
+}
+
+.text-danger {
+  color: red;
+  position: absolute;
+  margin-top: 20px;
+  font-size: 10px;
+}
+
+.services-wrapper {
+  padding: 20px 30px 20px 16px;
+}
+
+.logo-wrapper {
+  padding: 20px 30px;
+  &.dark {
+    border-left: 1px solid #024459;
+  }
+  &.light {
+    border-left: 1px solid #abd3e0;
+  }
+}
+
+// ::ng-deep.dropZoneContent {
+//   left: 28% !important;
+// }
+.fileformat {
+  margin: 10px;
+  color: red;
+  text-align: center;
+}

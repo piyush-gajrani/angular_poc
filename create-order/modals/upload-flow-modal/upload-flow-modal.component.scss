@@ -1,0 +1,35 @@
+mat-dialog-content {
+  overflow: unset !important;
+  height: 65vh !important;
+  max-width: 85vw;
+}
+
+.close-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-right: 24px;
+  cursor: pointer;
+}
+.modal-border {
+  border-bottom: 1.5px solid;
+  border-image-slice: 1 !important;
+
+  &.dark {
+    border-image: linear-gradient(
+      to right,
+      transparent 0%,
+      #00a9e0 51%,
+      transparent 100%
+    );
+  }
+
+  &.light {
+    border-image: linear-gradient(
+      to right,
+      transparent 0%,
+      #00a9e0 51%,
+      transparent 100%
+    );
+  }
+}

@@ -1,0 +1,31 @@
+.modal-container {
+  min-width: 35vw;
+}
+.warning-icon {
+  font-size: 8rem;
+  width: 100%;
+  height: 100%;
+  margin-top: 30px;
+
+  &.light {
+    color: orange;
+  }
+}
+.warning-text {
+  margin: 40px;
+  font-size: 20px;
+
+  &.light {
+    color: rgba(0, 0, 0, 0.64);
+  }
+}
+.error-icon {
+  font-size: 8rem;
+  width: 100%;
+  height: 100%;
+  margin-top: 30px;
+
+  &.light {
+    color: red;
+  }
+}

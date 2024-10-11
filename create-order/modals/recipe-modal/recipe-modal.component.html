@@ -1,0 +1,561 @@
+<div
+  class="section-container modal-container w-100 d-flex flex-column overflow-hidden"
+  [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+>
+  <div class="modal-header row mx-0 w-100 align-center">
+    <span class="col-10 px-0">
+      <h5 class="mb-0">Select Recipe</h5>
+    </span>
+    <span class="col-2 px-0 d-flex justify-end">
+      <span
+        class="material-symbols-outlined"
+        (click)="closeModal()"
+        [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+      >
+        close
+      </span></span
+    >
+  </div>
+  <hr />
+  <div class="modal-body row mx-0 w-100">
+    <form [formGroup]="form" class="px-0 w-100 h-100">
+      <div class="col-sm-12">
+        <mat-form-field
+          class="w-50"
+          appearance="outline"
+          [ngClass]="{
+            dark: isDarkThemeEnabled,
+            light: !isDarkThemeEnabled
+          }"
+        >
+          <mat-label
+            [ngClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled
+            }"
+            >Site Name</mat-label
+          >
+          <mat-select
+            [panelClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled
+            }"
+            formControlName="selectedSite"
+          >
+            @for (site of sites; track $index) {
+            <mat-option [value]="site.id">{{ site.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      @if(isLoading){
+      <div class="loader-section h-100 d-flex justify-center align-center">
+        <mat-spinner
+          class="recipe-modal-loader"
+          [ngClass]="{
+            dark: isDarkThemeEnabled,
+            light: !isDarkThemeEnabled
+          }"
+        ></mat-spinner>
+      </div>
+      } @else{ @if(isProcessAreaAvailable){
+      <div
+        class="col-sm-12 d-flex"
+        style="height: calc(100% - 78px)"
+        formGroupName="processArea"
+      >
+        <div class="process-area-section left-side">
+          @for(process of processArea; track $index){
+          <div
+            class="process-area"
+            [id]="'process-area-' + process.id"
+            [class.active]="selectedIndex === $index"
+            (click)="setActiveProcessAndGetData(process, $index)"
+          >
+            {{ process.type }}
+          </div>
+          }
+          <div
+            class="process-area"
+            [class.active]="selectedIndex == processArea.length"
+            (click)="transportToSite(processArea.length)"
+          >
+            Transport To Site
+          </div>
+        </div>
+        <div class="vr"></div>
+        @if(selectedIndex !== processArea.length){
+        <div
+          class="right-side"
+          [formGroupName]="toCamelCase(selectedProcessArea.type)"
+        >
+          <div class="recipe-info-section h-100">
+            <mat-tab-group
+              class="custom-mat-group h-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+              animationDuration="0ms"
+              (selectedTabChange)="onTabChange($event)"
+              [selectedIndex]="recipeTypeId"
+            >
+              @for(recipe of recipeTypes; track $index){
+              <mat-tab
+                labelClass="recipe-modal-label"
+                bodyClass="recipe-modal-body"
+              >
+                <ng-template mat-tab-label>{{ recipe.title }}</ng-template>
+                @if(isTabContentLoading){
+                <div
+                  class="loader-section h-100 d-flex justify-center align-center"
+                >
+                  <mat-spinner
+                    class="recipe-modal-loader"
+                    [ngClass]="{
+                      dark: isDarkThemeEnabled,
+                      light: !isDarkThemeEnabled
+                    }"
+                  ></mat-spinner>
+                </div>
+                } @else{ @if($index !== 3){
+                <div>
+                  <div
+                    class="process-parameter-section"
+                    formGroupName="processParameters"
+                  >
+                    <div>
+                      <mat-form-field
+                        appearance="outline"
+                        class="w-100"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      >
+                        <mat-label
+                          [ngClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                        >
+                          Virtual Recipes
+                        </mat-label>
+                        <mat-select
+                          [panelClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                          formControlName="virtualRecipe"
+                        >
+                          <mat-option [value]="1"> Virtual </mat-option>
+                          <mat-option [value]="0"> Non Virtual </mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+                    @for(param of processParameters; track $index) {
+                    <div class="ng-select-wrapper w-100">
+                      <ng-select
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                        [items]="param.parameterValues"
+                        bindLabel="parameterValue"
+                        [multiple]="true"
+                        [placeholder]="param.parameterName"
+                        [searchable]="true"
+                        [closeOnSelect]="false"
+                        [formControlName]="toCamelCase(param.parameterName)"
+                      >
+                        <ng-template
+                          ng-label-tmp
+                          let-item="item"
+                          let-clear="clear"
+                        >
+                          <div class="d-flex align-center">
+                            <span class="ng-value-label"
+                              >{{ item.parameterValue }}
+                              {{ item.measurementUnit }}
+                            </span>
+                            <span
+                              class="ng-value-icon right"
+                              (click)="clear(item)"
+                              aria-hidden="true"
+                            >
+                              <span
+                                class="material-symbols-outlined ng-select-close-icon"
+                              >
+                                close
+                              </span>
+                            </span>
+                          </div>
+                        </ng-template>
+                        <ng-template ng-option-tmp let-item="item">
+                          {{ item.parameterValue }} {{ item.measurementUnit }}
+                        </ng-template>
+                      </ng-select>
+                    </div>
+                    <!-- <div>
+                      <mat-form-field
+                        appearance="outline"
+                        class="w-100"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      >
+                        <mat-label
+                          [ngClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                        >
+                          {{ param.parameterName }}
+                        </mat-label>
+                        <mat-select
+                          [panelClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                          [formControlName]="toCamelCase(param.parameterName)"
+                          multiple
+                        >
+                          @for(option of param.parameterValues; track $index) {
+                          <mat-option
+                            [value]="{
+                              processParameterId: param.id,
+                              processParameterValueId: option.id,
+                            }"
+                          >
+                            {{ option.parameterValue }}&nbsp;{{
+                              option.measurementUnit
+                            }}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div> -->
+                    }
+
+                    <div class="ng-select-wrapper">
+                      <ng-select
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                        [items]="hexIDs"
+                        bindLabel="hexId"
+                        bindValue="id"
+                        [multiple]="true"
+                        placeholder="Hex ID"
+                        [searchable]="true"
+                        formControlName="toolId"
+                      >
+                        <ng-template
+                          ng-label-tmp
+                          let-item="item"
+                          let-clear="clear"
+                        >
+                          <div class="d-flex align-center">
+                            <span class="ng-value-label">
+                              {{ item.hexId }}
+                            </span>
+                            <span
+                              class="ng-value-icon right"
+                              (click)="clear(item)"
+                              aria-hidden="true"
+                            >
+                              <span
+                                class="material-symbols-outlined ng-select-close-icon"
+                              >
+                                close
+                              </span>
+                            </span>
+                          </div>
+                        </ng-template>
+                        <ng-template ng-option-tmp let-item="item">
+                          {{ siteID == 1 ? item.hexId : item.toolName }}
+                        </ng-template>
+                      </ng-select>
+                    </div>
+
+                    <!-- <div>
+                      <mat-form-field
+                        appearance="outline"
+                        class="w-100"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      >
+                        <mat-label
+                          [ngClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                        >
+                          Hex ID
+                        </mat-label>
+                        <mat-select
+                          [panelClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                          formControlName="toolId"
+                          multiple
+                        >
+                          @for(id of hexIDs; track $index) {
+                          <mat-option [value]="id.id">
+                            {{ siteID == 1 ? id.hexId : id.toolName }}
+                          </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    </div> -->
+                  </div>
+                  <div class="order-recipe-section">
+                    @if(isRecipeSectionLoading){
+                    <div
+                      class="loader-section h-100 d-flex justify-center align-center p-5"
+                    >
+                      <mat-spinner
+                        class="recipe-modal-loader"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      ></mat-spinner>
+                    </div>
+                    }@else{
+                    <mat-radio-group
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      formControlName="selectedRecipe"
+                    >
+                      @for(recipe of filteredOrderRecipe; track $index){
+                      <mat-radio-button
+                        class="order-recipe-radio-button"
+                        [value]="recipe"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      >
+                        <div class="recipe-name">
+                          {{ recipe.recipeName }} - {{ recipe.siteName }}
+                        </div>
+                        <div class="recipe-hexId">
+                          - {{ recipe.parameterValueNames }},
+                          {{ recipe.hexId }} -
+                          {{ recipe.virtualRecipe ? "Virtual" : "Non-Virtual" }}
+                        </div>
+                      </mat-radio-button>
+                      }
+                    </mat-radio-group>
+                    }
+                  </div>
+                  <div class="note-section my-3">
+                    <mat-form-field
+                      appearance="outline"
+                      class="w-100"
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                    >
+                      <mat-label
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                        >Recipe Note</mat-label
+                      >
+                      <textarea
+                        matInput
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                        rows="4"
+                        class="form-control"
+                        formControlName="recipeNote"
+                      ></textarea>
+                    </mat-form-field>
+                  </div>
+                  @if(isAddButtonVisible){
+                  <div class="upload-btn-section d-flex justify-end">
+                    <button
+                      mat-button
+                      class="btn btn-green me-3"
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      (click)="addRecipe()"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  }
+                </div>
+                } @else {
+                <div formGroupName="suggestedRecipe">
+                  <div class="suggested-recipe-section">
+                    @for(param of processParameters; track $index){
+                    <div class="d-flex">
+                      <mat-form-field
+                        class="w-100"
+                        appearance="outline"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      >
+                        <mat-label
+                          [ngClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                          >{{ param.parameterName }}*</mat-label
+                        >
+                        <input
+                          matInput
+                          [ngClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                          [formControlName]="toCamelCase(param.parameterName)"
+                        />
+                      </mat-form-field>
+                      @if(param.parameterValues && param.parameterValues.length
+                      && param.parameterValues[0].measurementUnit){
+                      <mat-form-field
+                        appearance="outline"
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                      >
+                        <input
+                          matInput
+                          [ngClass]="{
+                            dark: isDarkThemeEnabled,
+                            light: !isDarkThemeEnabled
+                          }"
+                          [value]="param.parameterValues[0].measurementUnit"
+                          readonly
+                        />
+                      </mat-form-field>
+                      }
+                    </div>
+                    }
+                  </div>
+                  <div class="note-section my-3">
+                    <mat-form-field
+                      appearance="outline"
+                      class="w-100"
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                    >
+                      <mat-label
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                        >Recipe Note</mat-label
+                      >
+                      <textarea
+                        matInput
+                        [ngClass]="{
+                          dark: isDarkThemeEnabled,
+                          light: !isDarkThemeEnabled
+                        }"
+                        rows="4"
+                        class="form-control"
+                        formControlName="recipeNote"
+                      ></textarea>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="upload-btn-section d-flex justify-end">
+                    <button
+                      mat-button
+                      class="btn btn-green me-3"
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      (click)="addSuggestedRecipe()"
+                    >
+                      Add Suggestion
+                    </button>
+                  </div>
+                </div>
+                } }
+              </mat-tab>
+              }
+            </mat-tab-group>
+          </div>
+        </div>
+        }@else {
+        <div class="right-side" formGroupName="transportToSite">
+          <div class="recipe-info-section h-100">
+            <div class="transport-to-site">
+              <mat-radio-group
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="transportedSite"
+              >
+                @for(site of availableSites; track $index;){
+                <mat-radio-button
+                  class="order-recipe-radio-button"
+                  [value]="site"
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                >
+                  <div class="recipe-name text-capitalize">
+                    {{ site.name }}
+                  </div>
+                </mat-radio-button>
+                }
+              </mat-radio-group>
+            </div>
+            @if(isTransportButtonVisible){
+            <div class="upload-btn-section d-flex justify-end">
+              <button
+                mat-button
+                class="btn btn-green"
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                (click)="addTransportRow()"
+              >
+                Add
+              </button>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+      }@else {
+      <div
+        class="col-sm-12 d-flex justify-center align-center"
+        style="height: calc(100% - 78px)"
+      >
+        <h1>No Recipes Found</h1>
+      </div>
+      }}
+    </form>
+  </div>
+</div>

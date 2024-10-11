@@ -1,0 +1,234 @@
+<div>
+  <div class="top-section mb-4">
+    <div class="breadcrumbs-wrapper">
+      <app-breadcrumbs [pageDetails]="pageDetails"></app-breadcrumbs>
+    </div>
+  </div>
+  <div
+    class="section-container"
+    [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+  >
+    <form [formGroup]="form" (ngSubmit)="updateChanges()">
+      <div class="d-flex" style="margin-top: -16px">
+        <div class="col-sm-6 services-wrapper">
+          <h4>
+            {{
+              manageHomeLabels.HOME_HEADING?.length
+                ? manageHomeLabels.HOME_HEADING[0]
+                : "Heading"
+            }}
+          </h4>
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                >{{
+                  manageHomeLabels.HOME_HEADING?.length
+                    ? manageHomeLabels.HOME_HEADING[0]
+                    : "Heading"
+                }}</mat-label
+              >
+              <input
+                matInput
+                class="form-control"
+                formControlName="headingFormControl"
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              />
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('headingFormControl')"
+                  [name]="'heading'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div
+          class="col-sm-6 logo-wrapper"
+          [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+        >
+          <h4>
+            {{
+              manageHomeLabels.HOME_PAGE_LOGO?.length
+                ? manageHomeLabels.HOME_PAGE_LOGO[0]
+                : "Logo"
+            }}
+          </h4>
+          <div class="d-flex">
+            <div class="w-50">
+              <ngx-file-drop
+                dropZoneLabel="Drop files here"
+                dropZoneClassName="dropZone"
+                contentClassName="dropZoneContent"
+                (onFileDrop)="dropped($event)"
+                [accept]="'.png'"
+                [multiple]="false"
+              >
+                <ng-template
+                  ngx-file-drop-content-tmp
+                  let-openFileSelector="openFileSelector"
+                >
+                  <div class="dropzone-label">
+                    <mat-icon class="material-symbols-outlined"
+                      >upload</mat-icon
+                    >
+                    <p class="my-2">Drag & Drop Here</p>
+                    <p class="my-2">Or</p>
+                    <button
+                      mat-button
+                      class="btn btn-file-upload btn-md"
+                      (click)="openFileSelector()"
+                    >
+                      Browse File
+                    </button>
+                    <!-- <p class="font-11">Maximum file size 100MB</p> -->
+                    @if(errorMessage){
+                    <p class="fileformat">{{ errorMessage }}</p>
+                    }
+                  </div>
+                </ng-template>
+              </ngx-file-drop>
+            </div>
+            <div class="w-50 d-flex justify-center align-center">
+              <img [src]="preview" class="preview" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="table-wrapper">
+        <table
+          class="table table-borderless"
+          [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+        >
+          <thead class="table-header">
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">
+                {{
+                  manageHomeLabels.COMMON_SR_NO?.length
+                    ? manageHomeLabels.COMMON_SR_NO[0]
+                    : "Sr.No"
+                }}
+              </th>
+              <th scope="col">
+                {{
+                  manageHomeLabels.MAIN_TITLE?.length
+                    ? manageHomeLabels.MAIN_TITLE[0]
+                    : "Available Links"
+                }}
+              </th>
+              <th scope="col">
+                {{
+                  manageHomeLabels.COMMON_ACTIONS?.length
+                    ? manageHomeLabels.COMMON_ACTIONS[0]
+                    : "Actions"
+                }}
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            cdkDropList
+            class="example-list"
+            (cdkDropListDropped)="drop($event)"
+          >
+            @for (link of availableLinks; track link.id) {
+            <tr
+              class="table-row"
+              cdkDragBoundary=".example-list"
+              cdkDrag
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <td>
+                <div class="example-handle" cdkDragHandle>
+                  <svg
+                    width="24px"
+                    fill="rgba(0, 0, 0, 0.2)"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M10 9h4V6h3l-5-5-5 5h3v3zm-1 1H6V7l-5 5 5 5v-3h3v-4zm14 2l-5-5v3h-3v4h3v3l5-5zm-9 3h-4v3H7l5 5 5-5h-3v-3z"
+                    ></path>
+                    <path d="M0 0h24v24H0z" fill="none"></path>
+                  </svg>
+                </div>
+              </td>
+              <td>
+                {{ link.sortOrder }}
+              </td>
+              <td>
+                @if(languageCode === 'eng'){
+                {{ link.headingText }}
+                } @else{
+                {{ link.headingTextJapan }}
+                }
+              </td>
+              <td>
+                <mat-checkbox
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                  [checked]="link.isIncluded"
+                  (change)="setIsIncluded(link.id, link.isIncluded)"
+                >
+                </mat-checkbox>
+                <!-- <input
+                  type="checkbox"
+                  name=""
+                  id=""
+
+                /> -->
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="justify-end btns-wrapper">
+        <button
+          mat-button
+          type="button"
+          class="btn btn-red-outline"
+          [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+          (click)="cancelChanges()"
+        >
+          {{
+            manageHomeLabels.HOME_CANCEL_BUTTON?.length
+              ? manageHomeLabels.HOME_CANCEL_BUTTON[0]
+              : "Cancel"
+          }}
+        </button>
+        <button
+          mat-button
+          type="submit"
+          class="btn btn-green-outline"
+          [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+        >
+          {{
+            manageHomeLabels.HOME_UPDATE_BUTTON?.length
+              ? manageHomeLabels.HOME_UPDATE_BUTTON[0]
+              : "Update"
+          }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- <app-footer-copy-right></app-footer-copy-right> -->

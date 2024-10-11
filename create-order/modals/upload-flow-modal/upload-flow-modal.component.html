@@ -1,0 +1,64 @@
+<div
+  class="section-container modal-container"
+  [ngClass]="{
+    dark: isDarkThemeEnabled,
+    light: !isDarkThemeEnabled
+  }"
+>
+  <div
+    class="modal-border"
+    [ngClass]="{
+      dark: isDarkThemeEnabled,
+      light: !isDarkThemeEnabled
+    }"
+  >
+    <div class="justify-between mb-4">
+      <div>
+        <h1 class="font-24 fw-6 mt-2">Upload Flow</h1>
+      </div>
+      <div class="close-btn" (click)="closeModal()">
+        <mat-icon class="material-symbols-outlined">close</mat-icon>
+      </div>
+    </div>
+    <div class="w-100 d-flex mb-4">
+      <div class="w-35 fw-6 font-18 align-center">Upload (.htm,.csv)</div>
+      <div class="w-65" style="border: 1px solid; padding: 8px">
+        <input
+          type="file"
+          accept=".csv,.htm"
+          [ngClass]="{
+            dark: isDarkThemeEnabled,
+            light: !isDarkThemeEnabled
+          }"
+          (change)="onFileSelected($event)"
+        />
+      </div>
+    </div>
+    <div class="w-100 d-flex mb-4">
+      <div class="w-35 fw-6 font-18 align-center">
+        Overwrite Existing Lot Recipes
+      </div>
+      <div class="w-65">
+        <mat-checkbox
+          (change)="Overwrite($event)"
+          [ngClass]="{
+            dark: isDarkThemeEnabled,
+            light: !isDarkThemeEnabled
+          }"
+          [color]="'primary'"
+        >
+        </mat-checkbox>
+      </div>
+    </div>
+  </div>
+  <div class="justify-end mt-4">
+    <button
+      type="submit"
+      (click)="uploadFlow()"
+      class="btn btn-green btn-md"
+      [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+    >
+      <span class="m-auto">Submit</span>
+    </button>
+  </div>
+</div>

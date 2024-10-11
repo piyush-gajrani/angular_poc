@@ -1,0 +1,167 @@
+<div
+  class="section-container modal-container"
+  [ngClass]="{
+    dark: isDarkThemeEnabled,
+    light: !isDarkThemeEnabled
+  }"
+>
+  @if(copiedLot){
+  <div class="text-center">
+    <div>
+      <mat-icon
+        class="material-symbols-outlined warning-icon"
+        [ngClass]="{
+          dark: isDarkThemeEnabled,
+          light: !isDarkThemeEnabled
+        }"
+      >
+        error_outline
+      </mat-icon>
+    </div>
+    <p
+      class="warning-text"
+      [ngClass]="{
+        dark: isDarkThemeEnabled,
+        light: !isDarkThemeEnabled
+      }"
+    >
+      You can only make changes in the first lot.
+    </p>
+  </div>
+  } @if(lastRow){
+  <div class="text-center">
+    <div>
+      <mat-icon
+        class="material-symbols-outlined error-icon"
+        [ngClass]="{
+          dark: isDarkThemeEnabled,
+          light: !isDarkThemeEnabled
+        }"
+      >
+        cancel
+      </mat-icon>
+    </div>
+    <p
+      class="warning-text"
+      [ngClass]="{
+        dark: isDarkThemeEnabled,
+        light: !isDarkThemeEnabled
+      }"
+    >
+      You can not delete last row.
+    </p>
+  </div>
+  } @if(copiedLot || lastRow){
+  <div class="upload-btn-section d-flex justify-end">
+    <button
+      (click)="closeModal()"
+      mat-button
+      class="btn btn-green me-3"
+      [ngClass]="{
+        dark: isDarkThemeEnabled,
+        light: !isDarkThemeEnabled
+      }"
+    >
+      Okay
+    </button>
+  </div>
+  } 
+  @if(showDepartmentCodeWarning){
+  <div class="text-center">
+    <div>
+      <mat-icon
+        class="material-symbols-outlined warning-icon"
+        [ngClass]="{
+          dark: isDarkThemeEnabled,
+          light: !isDarkThemeEnabled
+        }"
+      >
+        error_outline
+      </mat-icon>
+    </div>
+    <p
+      class="warning-text"
+      [ngClass]="{
+        dark: isDarkThemeEnabled,
+        light: !isDarkThemeEnabled
+      }"
+    >
+      Department code is blank! Do you want to proceed Anyway?
+    </p>
+  </div>
+
+  <div class="upload-btn-section d-flex justify-end">
+    <button
+      (click)="proceed(false)"
+      mat-button
+      class="btn btn-green me-3"
+      [ngClass]="{
+        dark: isDarkThemeEnabled,
+        light: !isDarkThemeEnabled
+      }"
+    >
+      No
+    </button>
+    <button
+      (click)="proceed(true)"
+      mat-button
+      class="btn btn-green me-3"
+      [ngClass]="{
+        dark: isDarkThemeEnabled,
+        light: !isDarkThemeEnabled
+      }"
+    >
+      Yes
+    </button>
+  </div>
+  }
+  @if(cancelOrderWarning){
+    <div class="text-center">
+      <div>
+        <mat-icon
+          class="material-symbols-outlined warning-icon"
+          [ngClass]="{
+            dark: isDarkThemeEnabled,
+            light: !isDarkThemeEnabled
+          }"
+        >
+          error_outline
+        </mat-icon>
+      </div>
+      <p
+        class="warning-text"
+        [ngClass]="{
+          dark: isDarkThemeEnabled,
+          light: !isDarkThemeEnabled
+        }"
+      >
+        Do you really want to cancel the order?
+      </p>
+    </div>
+  
+    <div class="upload-btn-section d-flex justify-end">
+      <button
+        (click)="cancelOrder(false)"
+        mat-button
+        class="btn btn-green me-3"
+        [ngClass]="{
+          dark: isDarkThemeEnabled,
+          light: !isDarkThemeEnabled
+        }"
+      >
+        No
+      </button>
+      <button
+        (click)="cancelOrder(true)"
+        mat-button
+        class="btn btn-green me-3"
+        [ngClass]="{
+          dark: isDarkThemeEnabled,
+          light: !isDarkThemeEnabled
+        }"
+      >
+        Yes
+      </button>
+    </div>
+    }
+</div>

@@ -1,0 +1,1977 @@
+@if(savingOrder){
+<div class="loader-section h-100 d-flex justify-center align-center">
+  <mat-spinner
+    class="save-order-loader"
+    [ngClass]="{
+      dark: isDarkThemeEnabled,
+      light: !isDarkThemeEnabled
+    }"
+  ></mat-spinner>
+</div>
+} @else{
+<div class="main-div overflow-auto">
+  <form
+    class="example-form"
+    [formGroup]="form"
+    (ngSubmit)="validateAndCreateOrder()"
+  >
+    <div class="justify-between">
+      <div class="breadcrumbs-wrapper mb-4">
+        <app-breadcrumbs [pageDetails]="pageDetails"></app-breadcrumbs>
+      </div>
+
+      <div class="mt-2" style="min-width: 20%">
+        <mat-form-field
+          class="w-100"
+          appearance="outline"
+          [ngClass]="{
+            dark: isDarkThemeEnabled,
+            light: !isDarkThemeEnabled
+          }"
+        >
+          <mat-label
+            [ngClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled
+            }"
+            >{{ orderLabels.ORDER_SELECT_FROM_PREVIOUS_ORDER_LABEL }}</mat-label
+          >
+
+          <mat-select
+            (openedChange)="prevOrderToggle()"
+            [panelClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled,
+              'mat-select-panel-with-search': true
+            }"
+            formControlName="prevOrder"
+          >
+            <div class="mt-0 m-3">
+              <mat-form-field
+                appearance="outline"
+                class="w-100 search-for-mat-select"
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                <input
+                  matInput
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                  class="form-control"
+                  [(ngModel)]="prevOrderSearchStr"
+                  [ngModelOptions]="{ standalone: true }"
+                  (keyup)="onKeyUpPrevOrder()"
+                />
+                <mat-icon matSuffix>search</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="searchBlock">
+              @if(filterPrevOrderList.length){
+              <mat-option [value]="null">Please Select</mat-option>
+              @for (order of filterPrevOrderList; track $index) {
+              <mat-option
+                [value]="order.id"
+                (click)="onSelectPrevOrder(order)"
+                >{{ order.orderId }}</mat-option
+              >
+              } } @else{
+              <mat-option>No Record Found</mat-option>
+              }
+            </div>
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="w-100 d-flex">
+      <div class="left-form">
+        <div
+          class="section-container"
+          [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+        >
+          <p class="mb-4 fw-5 font-18">
+            {{
+              orderLabels.ORDER_SITE_INFORMATION_HEADING?.length
+                ? orderLabels.ORDER_SITE_INFORMATION_HEADING[0]
+                : "Site Information"
+            }}
+          </p>
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_SITE_NAME_LABEL?.length
+                    ? orderLabels.ORDER_SITE_NAME_LABEL[0]
+                    : "Site Name"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="siteName"
+                (selectionChange)="onSiteSelectionChange($event)"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for (site of sites; track $index) {
+                <mat-option [value]="site.id">{{ site.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <div>
+              <mat-form-field
+                class="w-100"
+                appearance="outline"
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                <mat-label
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                >
+                  {{
+                    orderLabels.ORDER_TITLE_LABEL?.length
+                      ? orderLabels.ORDER_TITLE_LABEL[0]
+                      : "Order Title"
+                  }}
+                </mat-label>
+                <input
+                  matInput
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                  maxlength="300"
+                  formControlName="orderTitle"
+                />
+                <mat-error>
+                  <app-custom-validation-errors
+                    [errorControl]="form.get('orderTitle')"
+                    [name]="'Order Title'"
+                  ></app-custom-validation-errors>
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div>
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_DESCRIPTION_LABEL?.length
+                    ? orderLabels.ORDER_DESCRIPTION_LABEL[0]
+                    : "Description"
+                }}
+              </mat-label>
+              <textarea
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                rows="5"
+                class="form-control"
+                formControlName="description"
+              ></textarea>
+            </mat-form-field>
+          </div>
+
+          <div
+            class="font-14 black fw-5 form-input-label"
+            [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+          >
+            {{
+              orderLabels.ORDER_PROXY_REQUEST?.length
+                ? orderLabels.ORDER_PROXY_REQUEST[0]
+                : "Proxy Requestor"
+            }}
+          </div>
+          <mat-checkbox
+            [ngClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled
+            }"
+            formControlName="proxyOrder"
+            [color]="'primary'"
+          >
+            {{
+              orderLabels.ORDER_PROXY_ORDER?.length
+                ? orderLabels.ORDER_PROXY_ORDER[0]
+                : "Proxy Order"
+            }}
+          </mat-checkbox>
+
+          @if(form.value.proxyOrder){
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_PROXY_REQUESTOR?.length
+                    ? orderLabels.ORDER_PROXY_REQUESTOR[0]
+                    : "Proxy Requestor"
+                }}
+              </mat-label>
+              <mat-select
+                (openedChange)="proxyToggle()"
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled,
+                  'mat-select-panel-with-search': true
+                }"
+                formControlName="proxyRequestor"
+              >
+                <div class="mt-0 m-3">
+                  <mat-form-field
+                    appearance="outline"
+                    class="w-100 search-for-mat-select"
+                    [ngClass]="{
+                      dark: isDarkThemeEnabled,
+                      light: !isDarkThemeEnabled
+                    }"
+                  >
+                    <input
+                      matInput
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      class="form-control"
+                      [(ngModel)]="proxyRequestorSearchStr"
+                      [ngModelOptions]="{ standalone: true }"
+                      (keyup)="onKeyUpProxy()"
+                    />
+                    <mat-icon matSuffix>search</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="searchBlock">
+                  @if(filterProxyUsersList.length){
+                  <mat-option [value]="null">Please Select</mat-option>
+                  @for(proxy of filterProxyUsersList;track $index){
+                  <mat-option [value]="proxy.id"
+                    >{{ proxy.firstName }} {{ proxy.lastName }}</mat-option
+                  >
+                  } } @else{
+                  <mat-option>No Record Found</mat-option>
+                  }
+                </div>
+              </mat-select>
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('proxyRequestor')"
+                  [name]="'Proxy Requestor'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          }
+
+          <div
+            class="font-14 black fw-5 form-input-label"
+            [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+          >
+            {{
+              orderLabels.ORDER_PREVIOUSLY_ORDERED?.length
+                ? orderLabels.ORDER_PREVIOUSLY_ORDERED[0]
+                : "Previously Ordered"
+            }}
+          </div>
+          <mat-checkbox
+            [ngClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled
+            }"
+            formControlName="previouslyOrdered"
+            [color]="'primary'"
+          >
+            Yes
+          </mat-checkbox>
+
+          @if(form.value.previouslyOrdered){
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_PREVIOUS_REQUEST_ID?.length
+                    ? orderLabels.ORDER_PREVIOUS_REQUEST_ID[0]
+                    : "Previous Request ID"
+                }}
+              </mat-label>
+              <mat-select
+                (openedChange)="previousOrderIdToggle()"
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled,
+                  'mat-select-panel-with-search': true
+                }"
+                formControlName="previousOrderId"
+              >
+                <div class="mt-0 m-3">
+                  <mat-form-field
+                    appearance="outline"
+                    class="w-100 search-for-mat-select"
+                    [ngClass]="{
+                      dark: isDarkThemeEnabled,
+                      light: !isDarkThemeEnabled
+                    }"
+                  >
+                    <input
+                      matInput
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      class="form-control"
+                      [(ngModel)]="previousOrderIdSearchStr"
+                      [ngModelOptions]="{ standalone: true }"
+                      (keyup)="onKeyUpPreviousOrderId()"
+                    />
+                    <mat-icon matSuffix>search</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="searchBlock">
+                  @if(filterOrderIdList.length){
+                  <mat-option [value]="null">Please Select</mat-option>
+                  @for(previousOrderId of filterOrderIdList;track $index){
+                  <mat-option [value]="previousOrderId">{{
+                    previousOrderId.orderId
+                  }}</mat-option>
+                  } } @else{
+                  <mat-option>No Record Found</mat-option>
+                  }
+                </div>
+              </mat-select>
+
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('previousOrderId')"
+                  [name]="'Previous Request ID'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          }
+        </div>
+        <div
+          class="shippingInfo section-container"
+          [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+        >
+          <p class="mb-4 fw-5 font-18">
+            {{
+              orderLabels.ORDER_SHIPPING_TO_REQUESTOR_ADDRESS_HEADING?.length
+                ? orderLabels.ORDER_SHIPPING_TO_REQUESTOR_ADDRESS_HEADING[0]
+                : "Shipping to (Requestor's Address)"
+            }}
+          </p>
+
+          <div class="font-14 black fw-5 mt-3">
+            {{
+              orderLabels.ORDER_SHIP_OUTSIDE_LABEL?.length
+                ? orderLabels.ORDER_SHIP_OUTSIDE_LABEL[0]
+                : "Do you want to ship to outside ?"
+            }}
+          </div>
+          <mat-slide-toggle
+            formControlName="shipOutside"
+            [checked]="isSlideChecked"
+            (change)="toggleChanges($event)"
+            [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+          >
+            @if(isSlideChecked){
+            <p>Yes</p>
+            } @else{
+            <p>No</p>
+            }
+          </mat-slide-toggle>
+
+          @if(!isSlideChecked){
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_SELECT_ATTENDANT_LABEL?.length
+                    ? orderLabels.ORDER_SELECT_ATTENDANT_LABEL[0]
+                    : "Select Attendant"
+                }}
+              </mat-label>
+              <mat-select
+                (openedChange)="attendantToggle()"
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled,
+                  'mat-select-panel-with-search': true
+                }"
+                formControlName="attendantDropdown"
+              >
+                <div class="mt-0 m-3">
+                  <mat-form-field
+                    appearance="outline"
+                    class="w-100 search-for-mat-select"
+                    [ngClass]="{
+                      dark: isDarkThemeEnabled,
+                      light: !isDarkThemeEnabled
+                    }"
+                  >
+                    <input
+                      matInput
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      class="form-control"
+                      [(ngModel)]="attendantSearchStr"
+                      [ngModelOptions]="{ standalone: true }"
+                      (keyup)="onKeyUpAttendant()"
+                    />
+                    <mat-icon matSuffix>search</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="searchBlock">
+                  @if(filterAttendantList.length){
+                  <mat-option [value]="null">Please Select</mat-option>
+                  @for(attendant of filterAttendantList;track $index){
+                  <mat-option [value]="attendant.id"
+                    >{{ attendant.firstName }}
+                    {{ attendant.lastName }}</mat-option
+                  >
+                  } } @else{
+                  <mat-option>No Record Found</mat-option>
+                  }
+                </div>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          } @else{
+
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_ATTENDANT_NAME_LABEL?.length
+                    ? orderLabels.ORDER_ATTENDANT_NAME_LABEL[0]
+                    : "Attendant Name"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="attendantName"
+              />
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_ATTENDANT_PHONE_LABEL?.length
+                    ? orderLabels.ORDER_ATTENDANT_PHONE_LABEL[0]
+                    : "Attendant Phone"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="attendantPhone"
+              />
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('attendantPhone')"
+                  [name]="'Attendant Phone'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          }
+
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_SELECT_COMPANY_OR_DEPARTMENT_LABEL?.length
+                    ? orderLabels.ORDER_SELECT_COMPANY_OR_DEPARTMENT_LABEL[0]
+                    : " Select Company Or Department"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="department"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for (dept of departments; track $index) {
+                <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div>
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_SHIP_TO_COUNTRY?.length
+                    ? orderLabels.ORDER_SHIP_TO_COUNTRY[0]
+                    : "Ship To Country"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="country"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                <mat-option [value]="1">USA</mat-option>
+                <mat-option [value]="2">Japan</mat-option>
+                <mat-option [value]="3">Taiwan</mat-option>
+                <mat-option [value]="4">Other</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div>
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_ADDRESS_LABEL?.length
+                    ? orderLabels.ORDER_ADDRESS_LABEL[0]
+                    : "Address"
+                }}
+              </mat-label>
+              <textarea
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                rows="5"
+                class="form-control"
+                formControlName="address"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <div
+        class="projectInfo section-container"
+        [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+        style="width: 70%"
+      >
+        <p class="mb-4 fw-5 font-18">
+          {{
+            orderLabels.ORDER_PROJECT_INFORMATION_HEADING?.length
+              ? orderLabels.ORDER_PROJECT_INFORMATION_HEADING[0]
+              : "Project Information"
+          }}
+        </p>
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              class="w-100"
+              appearance="outline"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_PROJECT_NUMBER_OR_WBS_LABEL &&
+                orderLabels.ORDER_PROJECT_NUMBER_OR_WBS_LABEL.length > 0){
+                {{ orderLabels.ORDER_PROJECT_NUMBER_OR_WBS_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{
+                    orderLabels.ORDER_PROJECT_NUMBER_OR_WBS_LABEL[1]
+                  }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Project Number or WBS</span>
+                }
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="projectNumberType"
+              >
+                <mat-option
+                  [value]="0"
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                  >Project Number
+                </mat-option>
+                <mat-option
+                  [value]="1"
+                  [ngClass]="{
+                    dark: isDarkThemeEnabled,
+                    light: !isDarkThemeEnabled
+                  }"
+                  >WBS
+                </mat-option>
+              </mat-select>
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('projectNumberType')"
+                  [name]="'Project Number or WBS'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(form.value.projectNumberType == 0){
+                @if(orderLabels.ORDER_PROJECT_NUMBER_LABEL &&
+                orderLabels.ORDER_PROJECT_NUMBER_LABEL.length > 0){
+                {{ orderLabels.ORDER_PROJECT_NUMBER_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{ orderLabels.ORDER_PROJECT_NUMBER_LABEL[1] }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Project Number</span>
+                } } @else { @if (orderLabels.ORDER_WBS_LABEL &&
+                orderLabels.ORDER_WBS_LABEL.length > 0) {
+                {{ orderLabels.ORDER_WBS_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{ orderLabels.ORDER_WBS_LABEL[1] }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">WBS</span>
+                } }
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                maxlength="100"
+                formControlName="projectNumber"
+              />
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('projectNumber')"
+                  [name]="'Project Number or WBS'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_PHONE_NUMBER?.length
+                    ? orderLabels.ORDER_PHONE_NUMBER[0]
+                    : "Phone"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                [value]="userDetails.phone"
+                formControlName="phone"
+              />
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.USER_FIELD_DEPT_CODE?.length
+                    ? orderLabels.USER_FIELD_DEPT_CODE[0]
+                    : "Department Code"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                maxlength="100"
+                formControlName="departmentCode"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          @if(selectedRole.roleName !== 'internal_registrant'){
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_ENGINEER_INCHARGE_LABEL &&
+                orderLabels.ORDER_ENGINEER_INCHARGE_LABEL.length > 0){
+                {{ orderLabels.ORDER_ENGINEER_INCHARGE_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{
+                    orderLabels.ORDER_ENGINEER_INCHARGE_LABEL[1]
+                  }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Engineer In Charge</span>
+                }
+              </mat-label>
+              <mat-select
+                class="form-control"
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled,
+                }"
+                formControlName="engineerInCharge"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for(engg of engineerIncharges;track $index){
+                <mat-option [value]="engg.id"
+                  >{{ engg.firstName }} {{ engg.lastName }}</mat-option
+                >
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100 mat-select-with-search"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_ORDER_FOR_LABEL &&
+                orderLabels.ORDER_ORDER_FOR_LABEL.length > 0){
+                {{ orderLabels.ORDER_ORDER_FOR_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{ orderLabels.ORDER_ORDER_FOR_LABEL[1] }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Order For</span>
+                }
+              </mat-label>
+              <mat-select
+                (openedChange)="orderForToggle()"
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled,
+                  'mat-select-panel-with-search': true
+                }"
+                formControlName="orderFor"
+                (selectionChange)="onOrderForSelectionChange($event)"
+              >
+                <div class="mt-0 m-3">
+                  <mat-form-field
+                    appearance="outline"
+                    class="w-100 search-for-mat-select"
+                    [ngClass]="{
+                      dark: isDarkThemeEnabled,
+                      light: !isDarkThemeEnabled
+                    }"
+                  >
+                    <input
+                      matInput
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      class="form-control"
+                      [(ngModel)]="orderForSearchStr"
+                      [ngModelOptions]="{ standalone: true }"
+                      (keyup)="onKeyUpOrderFor()"
+                    />
+                    <mat-icon matSuffix>search</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="searchBlock">
+                  @if(filterUsersList.length){
+                  <mat-option [value]="null">Please Select</mat-option>
+                  @for(orderFor of filterUsersList;track $index){
+                  <mat-option [value]="orderFor.id">
+                    {{ orderFor.firstName }}
+                    {{ orderFor.lastName }}
+                  </mat-option>
+                  } } @else{
+                  <mat-option>No Record Found</mat-option>
+                  }
+                </div>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          }
+        </div>
+        <div class="row">
+          <div class="col-6 ng-select-wrapper">
+            <ng-select
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+              [items]="tagNames"
+              [multiple]="true"
+              [placeholder]="
+                orderLabels.ORDER_TAG_NAME_LABEL?.length
+                  ? orderLabels.ORDER_TAG_NAME_LABEL[0]
+                  : 'Tag Name'
+              "
+              [closeOnSelect]="false"
+              [searchable]="true"
+              formControlName="tagName"
+            >
+              <ng-template ng-label-tmp let-item="item" let-clear="clear">
+                <div class="d-flex align-center">
+                  <span class="ng-value-label">{{ item }}</span>
+                  <span
+                    class="ng-value-icon right"
+                    (click)="clear(item)"
+                    aria-hidden="true"
+                  >
+                    <span
+                      class="material-symbols-outlined ng-select-close-icon"
+                    >
+                      close
+                    </span>
+                  </span>
+                </div>
+              </ng-template>
+            </ng-select>
+            <!-- <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_TAG_NAME_LABEL?.length
+                    ? orderLabels.ORDER_TAG_NAME_LABEL[0]
+                    : "Tag Name"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="tagName"
+                multiple
+              >
+                @for(tag of tagNames;track $index){
+                <mat-option [value]="tag">{{ tag }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field> -->
+          </div>
+
+          @if(selectedRole.roleName !== 'internal_registrant'){
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_APPROVER_MANAGER_LABEL?.length
+                    ? orderLabels.ORDER_APPROVER_MANAGER_LABEL[0]
+                    : "Approver Manager"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                [value]="userDetails.approverManager"
+                formControlName="approverManager"
+              />
+            </mat-form-field>
+          </div>
+          }
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_BUSINESS_UNIT_LABEL?.length
+                    ? orderLabels.ORDER_BUSINESS_UNIT_LABEL[0]
+                    : "Business Unit"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="businessUnit"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for(unit of businessUnits;track $index){
+                <mat-option [value]="unit.id">
+                  {{ unit.name }}{{ unit.id }}
+                </mat-option>
+                }
+              </mat-select>
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('businessUnit')"
+                  [name]="'Business Unit'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_EMPLOYEE_ID_LABEL?.length
+                    ? orderLabels.ORDER_EMPLOYEE_ID_LABEL[0]
+                    : "Employee ID"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                [value]="userDetails.employeeId"
+                formControlName="employeeID"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100 mat-datepicker-form-field"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_DELIVERY_DATE_LABEL &&
+                orderLabels.ORDER_DELIVERY_DATE_LABEL.length > 0 ){
+                {{ orderLabels.ORDER_DELIVERY_DATE_LABEL[0] }}
+                }@else {
+                <span class="m-auto">Desired Delivery Date</span>
+                }
+              </mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                [min]="minDate"
+                formControlName="desiredDeliveryDate"
+              />
+              <mat-datepicker-toggle
+                matIconSuffix
+                [for]="picker"
+              ></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_CONFIDENTIAL_LEVEL_LABEL &&
+                orderLabels.ORDER_CONFIDENTIAL_LEVEL_LABEL.length > 0){
+                {{ orderLabels.ORDER_CONFIDENTIAL_LEVEL_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{
+                    orderLabels.ORDER_CONFIDENTIAL_LEVEL_LABEL[1]
+                  }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Confidential Level</span>
+                }
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="confidentialLevel"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for(level of confidentialLevelArray;track $index){
+                <mat-option [value]="level.value">{{
+                  level.description
+                }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!-- <div class="row">
+          <div class="col-6">
+            <mat-form-field appearance="outline" class="w-100" [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }">
+              <mat-label [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{ orderLabels.ORDER_EXPEDITE_FLAG_LABEL }}</mat-label
+              >
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="expediteFlag"
+              >
+                <mat-option value="Yes">Yes</mat-option>
+                <mat-option value="No">No</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <div class="col-6">
+            <mat-form-field appearance="outline" class="w-100" [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }">
+              <mat-label [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }">
+                @if(orderLabels.ORDER_INTERNAL_PRIORITY_LABEL && orderLabels.ORDER_INTERNAL_PRIORITY_LABEL.length > 0 ){
+                {{ orderLabels.ORDER_INTERNAL_PRIORITY_LABEL[0] }}
+                <svg xmlns="http://www.w3.org/2000/svg" matTooltip="{{ orderLabels.ORDER_INTERNAL_PRIORITY_LABEL[1] }}"
+                  height="18px" viewBox="0 -960 960 960" width="24px" fill="#00a9e0" class="svg-cursor">
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                </svg>
+                }@else {
+                <span class="m-auto">--</span>
+                }
+              </mat-label>
+              <mat-select [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }" formControlName="internalPriority">
+                <mat-option [value]="null">Please Select</mat-option>
+                @for(priority of internalPriorityArray;track $index){
+                <mat-option [value]="priority.value">{{
+                  priority.description
+                  }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div> -->
+
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if (orderLabels.ORDER_WAFER_PROVIDED_BY_LABEL &&
+                orderLabels.ORDER_WAFER_PROVIDED_BY_LABEL.length > 0){
+                {{ orderLabels.ORDER_WAFER_PROVIDED_BY_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{
+                    orderLabels.ORDER_WAFER_PROVIDED_BY_LABEL[1]
+                  }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="svg-cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Wafer Provided By</span>
+                }
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="waferProvidedBy"
+              >
+                <mat-option [value]="0">Customer</mat-option>
+                <mat-option
+                  [value]="selectedSite ? selectedSite.id : userDetails.siteId"
+                  >{{
+                    selectedSite ? selectedSite.name : userDetails.siteId
+                  }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          @if(form.value.waferProvidedBy != 0){
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_WAFER_TYPE_LABEL &&
+                orderLabels.ORDER_WAFER_TYPE_LABEL.length > 0 ){
+                {{ orderLabels.ORDER_WAFER_TYPE_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{ orderLabels.ORDER_WAFER_TYPE_LABEL[1] }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="svg-cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+
+                }@else {
+                <span class="m-auto">Wafer Type</span>
+                }
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="waferType"
+                (selectionChange)="updateWaferType($event)"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for(type of waferTypes;track $index){
+                <mat-option class="waferOptions" [value]="type">{{
+                  type.name
+                }}</mat-option>
+                }
+              </mat-select>
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('waferType')"
+                  [name]="'Wafer Type'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          }
+        </div>
+        @if(form.value.waferProvidedBy == 0){
+        <div class="row">
+          <div>
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if(orderLabels.ORDER_COMING_FROM_ADDRESS_LABEL &&
+                orderLabels.ORDER_COMING_FROM_ADDRESS_LABEL.length > 0 ) {
+                {{ orderLabels.ORDER_COMING_FROM_ADDRESS_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{
+                    orderLabels.ORDER_COMING_FROM_ADDRESS_LABEL[1]
+                  }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Coming From (Address)</span>
+                }
+              </mat-label>
+              <textarea
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                rows="5"
+                class="form-control"
+                formControlName="comingFromAddress"
+              ></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        } @if(form.value.siteName != 1){
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                @if (orderLabels.ORDER_LOT_ID_LABEL &&
+                orderLabels.ORDER_LOT_ID_LABEL.length > 0) {
+                {{ orderLabels.ORDER_LOT_ID_LABEL[0] }}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  matTooltip="{{ orderLabels.ORDER_LOT_ID_LABEL[1] }}"
+                  height="18px"
+                  viewBox="0 -960 960 960"
+                  width="24px"
+                  fill="#00a9e0"
+                  class="cursor"
+                >
+                  <path
+                    d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+                  />
+                </svg>
+                }@else {
+                <span class="m-auto">Lot ID (SF ID, TIA ID)</span>
+                }
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                formControlName="lotID"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+        }
+
+        <div class="row">
+          <div
+            class="font-14 black fw-5 form-input-label"
+            [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+          >
+            {{
+              orderLabels.ORDER_USING_BONDING_WAFER_CHECK_LABEL?.length
+                ? orderLabels.ORDER_USING_BONDING_WAFER_CHECK_LABEL[0]
+                : "Using Bonded Wafers?"
+            }}
+          </div>
+          <mat-checkbox
+            [ngClass]="{
+              dark: isDarkThemeEnabled,
+              light: !isDarkThemeEnabled
+            }"
+            formControlName="isUsingBondedWafers"
+            [color]="'primary'"
+          >
+            Yes
+          </mat-checkbox>
+        </div>
+
+        @if(form.value.isUsingBondedWafers){
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_BONDING_WAFER_PROVIDED_BY_LABEL?.length
+                    ? orderLabels.ORDER_BONDING_WAFER_PROVIDED_BY_LABEL[0]
+                    : "Bonding Wafer Provided By"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="bondingWaferProvidedBy"
+              >
+                <mat-option [value]="'Customer'">Customer</mat-option>
+                <mat-option [value]="'Previous Order'"
+                  >Previous Order</mat-option
+                >
+                <mat-option [value]="selectedSite.name">{{
+                  selectedSite ? selectedSite.name : userDetails.siteId
+                }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          @if(form.value.bondingWaferProvidedBy == 'Previous Order'){
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_BONDING_WAFERS_PREVIOUS_ORDER_LABEL?.length
+                    ? orderLabels.ORDER_BONDING_WAFERS_PREVIOUS_ORDER_LABEL[0]
+                    : "Bonding wafers, previous order"
+                }}
+              </mat-label>
+              <mat-select
+                (openedChange)="bondingWaferPreviousOrderIdToggle()"
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled,
+                  'mat-select-panel-with-search': true
+                }"
+                formControlName="bondingWaferPreviousOrder"
+              >
+                <div class="mt-0 m-3">
+                  <mat-form-field
+                    appearance="outline"
+                    class="w-100 search-for-mat-select"
+                    [ngClass]="{
+                      dark: isDarkThemeEnabled,
+                      light: !isDarkThemeEnabled
+                    }"
+                  >
+                    <input
+                      matInput
+                      [ngClass]="{
+                        dark: isDarkThemeEnabled,
+                        light: !isDarkThemeEnabled
+                      }"
+                      class="form-control"
+                      [(ngModel)]="bondingWaferPreviousOrderSearchStr"
+                      [ngModelOptions]="{ standalone: true }"
+                      (keyup)="onKeyUpBondingWaferPreviousOrderID()"
+                    />
+                    <mat-icon matSuffix>search</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="searchBlock">
+                  @if(filterBondingWaferOrderIdList.length){
+                  <mat-option [value]="null">Please Select</mat-option>
+                  @for(bondingWaferPreviousOrder of
+                  filterBondingWaferOrderIdList;track $index){
+                  <mat-option [value]="bondingWaferPreviousOrder">{{
+                    bondingWaferPreviousOrder.orderId
+                  }}</mat-option>
+                  } } @else{
+                  <mat-option>No Record Found</mat-option>
+                  }
+                </div>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          } @if( (form.value.bondingWaferProvidedBy != 'Customer') &&
+          (form.value.bondingWaferProvidedBy != 'Previous Order') ){
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_BONDING_WAFER_TYPE_LABEL?.length
+                    ? orderLabels.ORDER_BONDING_WAFER_TYPE_LABEL[0]
+                    : "Bonding Wafer Type"
+                }}
+              </mat-label>
+              <mat-select
+                [panelClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                formControlName="bondingWaferType"
+              >
+                <mat-option [value]="null">Please Select</mat-option>
+                @for(type of waferTypes;track $index){
+                <mat-option class="waferOptions" [value]="type.id">{{
+                  type.name
+                }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+          }
+        </div>
+        }
+
+        <div class="row">
+          <div class="col-6">
+            <mat-form-field
+              appearance="outline"
+              class="w-100"
+              [ngClass]="{
+                dark: isDarkThemeEnabled,
+                light: !isDarkThemeEnabled
+              }"
+            >
+              <mat-label
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+              >
+                {{
+                  orderLabels.ORDER_STAKEHOLDER_EMAIL_LABEL?.length
+                    ? orderLabels.ORDER_STAKEHOLDER_EMAIL_LABEL[0]
+                    : "Stakeholder User Emails"
+                }}
+              </mat-label>
+              <input
+                matInput
+                [ngClass]="{
+                  dark: isDarkThemeEnabled,
+                  light: !isDarkThemeEnabled
+                }"
+                class="form-control"
+                formControlName="stakeholderEmail"
+              />
+              <mat-icon
+                matSuffix
+                class="material-symbols-outlined cursor-pointer"
+                (click)="addEmail()"
+              >
+                mail
+              </mat-icon>
+              <mat-error>
+                <app-custom-validation-errors
+                  [errorControl]="form.get('stakeholderEmail')"
+                  [name]="'Email Address'"
+                ></app-custom-validation-errors>
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <!-- <button
+            type="button"
+            class="email-btn"
+            (click)="addEmail()"
+            [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+          >
+            <mat-icon class="material-symbols-outlined">arrow_forward</mat-icon>
+          </button> -->
+        </div>
+
+        <div class="row">
+          <div class="col-12 d-flex" id="emailsContainer">
+            @for(email of stakeHolderEmailsArray;track $index){
+            <div class="emailsDiv d-flex">
+              <p class="m-1">{{ email }}</p>
+              <span (click)="removeEmail(email)">
+                <mat-icon class="material-symbols-outlined clearIcon"
+                  >clear</mat-icon
+                ></span
+              >
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <ngx-file-drop
+              dropZoneLabel="Drop files here"
+              [dropZoneClassName]="fileDropClass"
+              contentClassName="dropZoneContent"
+              (onFileDrop)="dropped($event)"
+              accept=".png,.jpg,.jpeg"
+            >
+              <ng-template
+                ngx-file-drop-content-tmp
+                let-openFileSelector="openFileSelector"
+              >
+                <div class="dropzone-label">
+                  <mat-icon class="material-symbols-outlined">upload</mat-icon>
+                  <p class="my-2">Upload Structure Image</p>
+                  <p class="my-2">Or</p>
+                  <button
+                    type="button"
+                    mat-button
+                    class="btn btn-file-upload btn-md"
+                    (click)="openFileSelector()"
+                  >
+                    Browse File
+                  </button>
+                  <p class="font-11 mb-0">Maximum file size 100MB</p>
+                  <p class="font-11">Accepted formats - .png, .jpg, .jpeg</p>
+                </div>
+                @if(!isFileUploaded){
+                <span style="color: #f44336">Please upload a document</span>
+                }
+              </ng-template>
+            </ngx-file-drop>
+          </div>
+          @if(preview){
+          <div class="justify-start">
+            <div>
+              <p class="font-15">{{ fileName }}</p>
+            </div>
+            <div class="previewImgIcon">
+              <span class="cursor m-2" (click)="openPreviewModal()">
+                <mat-icon>remove_red_eye</mat-icon>
+              </span>
+              <span class="cursor" (click)="removeFile()">
+                <mat-icon class="material-symbols-outlined"
+                  >clear</mat-icon
+                ></span
+              >
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="section-container lot-section w-100"
+      [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+    >
+      <p class="my-2 fw-5 font-18">
+        @if(orderLabels.ORDER_LOT_SECTION_HEADING &&
+        orderLabels.ORDER_LOT_SECTION_HEADING.length > 0){
+        {{ orderLabels.ORDER_LOT_SECTION_HEADING[0] }}
+        }@else {
+        <span class="m-auto">Lot Section</span>
+        }
+      </p>
+      <app-lot-section
+        [selectedSite]="selectedSite"
+        [sites]="sites"
+        [selectedWafer]="selectedWafer"
+        [selectedOrderData]="selectedOrderData"
+        (OrderLotData)="updateLotData($event)"
+      ></app-lot-section>
+    </div>
+    <div class="justify-end btns-wrapper">
+      <button
+        type="button"
+        class="btn btn-red btn-md"
+        (click)="cancelOrder()"
+        [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+      >
+        @if(orderLabels.ORDER_CANCEL_BUTTON &&
+        orderLabels.ORDER_CANCEL_BUTTON.length > 0){
+
+        {{ orderLabels.ORDER_CANCEL_BUTTON[0] }}
+        }@else {
+        <span class="m-auto">Cancel</span>
+        }
+      </button>
+      <button
+        type="submit"
+        class="btn btn-green btn-md"
+        [ngClass]="{ dark: isDarkThemeEnabled, light: !isDarkThemeEnabled }"
+      >
+        @if(orderLabels.ORDER_SUBMIT_ORDER_BUTTON &&
+        orderLabels.ORDER_SUBMIT_ORDER_BUTTON.length > 0 ){
+
+        {{ orderLabels.ORDER_SUBMIT_ORDER_BUTTON[0] }}
+        } @else {
+        <span class="m-auto">Submit Order</span>
+        }
+      </button>
+    </div>
+  </form>
+</div>
+}
